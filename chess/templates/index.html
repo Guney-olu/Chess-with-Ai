@@ -1,0 +1,56 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chess Game</title>
+  <style>
+    #board-container {
+      max-width: 500px;
+      margin: auto;
+    }
+
+    #turn-indicator {
+      text-align: center;
+      font-size: 18px;
+      margin-top: 10px;
+    }
+
+    .player-container {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 10px;
+    }
+
+    .player-image {
+      width: 100px;  /* Adjust the size as needed */
+      height: 100px;
+    }
+  </style>
+</head>
+<body>
+  <div id="turn-indicator">Turn: White</div>
+  <div class="player-container">
+    <img src="{{ url_for('static', filename='img/alexz.jpeg') }}" alt="White Player" class="player-image">
+    <img src="{{ url_for('static', filename='img/hero-img.png') }}" alt="Black Player" class="player-image">
+  </div>
+  <div id="board-container"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.js"></script>
+  <script>
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+    socket.on('connect', function() {
+      socket.emit('start_game');
+    });
+
+    socket.on('update_board', function(data) {
+      document.getElementById('board-container').innerHTML = data.svg;
+      document.getElementById('turn-indicator').innerText = 'Turn: ' + data.turn;
+    });
+
+    socket.on('game_result', function(result) {
+      alert(result);
+    });
+  </script>
+</body>
+</html>
